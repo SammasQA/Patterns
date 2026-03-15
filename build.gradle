@@ -1,19 +1,25 @@
 plugins {
     id 'java'
+    id 'io.freefair.lombok' version '8.0.1'   // плагин Lombok
 }
-
-group = 'ru.netology'
-version = '1.0-SNAPSHOT'
 
 repositories {
     mavenCentral()
 }
 
 dependencies {
-    testImplementation platform('org.junit:junit-bom:5.10.0')
-    testImplementation 'org.junit.jupiter:junit-jupiter'
+    // JUnit 5
+    testImplementation 'org.junit.jupiter:junit-jupiter:5.9.2'
+
+    // Selenide
+    testImplementation 'com.codeborne:selenide:6.17.1'
+
+    // Faker
+    testImplementation 'com.github.javafaker:javafaker:1.0.2'
 }
 
 test {
     useJUnitPlatform()
+
+    systemProperty 'selenide.headless', System.getProperty('selenide.headless')
 }
