@@ -22,6 +22,7 @@ public class DeliveryTest {
     @BeforeEach
     void setUp() {
         open("http://localhost:9999");
+
     }
 
     @Test
