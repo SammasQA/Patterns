@@ -19,11 +19,18 @@ jobs:
           java-version: '11'
           distribution: 'temurin'
 
-      - name: Start SUT
-        run: java -jar ./artifacts/app-card-delivery.jar &
+
+      - name: Start SUT on port 9999
+        run: java -jar ./artifacts/app-card-delivery.jar --server.port=9999 &
+
+
+      - name: Wait for SUT to be ready
+        run: |
+          timeout 60 bash -c 'until curl -s http://localhost:9999; do sleep 2; done'
 
       - name: Grant execute permission for gradlew
         run: chmod +x gradlew
+
 
       - name: Build with Gradle
         run: ./gradlew test --info -Dselenide.headless=true
