@@ -4,7 +4,6 @@ on: [push, pull_request]
 
 jobs:
   build:
-
     runs-on: ubuntu-latest
 
     steps:
@@ -16,14 +15,13 @@ jobs:
           distribution: 'adopt'
       - name: Grant execute permission for gradlew
         run: chmod +x gradlew
-      - name: Start SUT
-        # Запускаем SUT,
-        # имя файла SUT будет отличаться в каждой задаче.
-        # & означает, что в фоновом режиме не блокируем терминал для запуска тестов,
-        # обязательно должен быть для запуска SUT в CI
-        run: java -jar ./artifacts/app-replan-delivery.jar &
+      # Запускаем SUT на порту 9999 (как требует тест)
+      - name: Start SUT on port 9999
+        run: java -jar ./artifacts/app-replan-delivery.jar --server.port=9999 &
+      # Ждём, пока SUT станет доступным
+      - name: Wait for SUT to be ready
+        run: |
+          timeout 60 bash -c 'until curl -s http://localhost:9999; do sleep 2; done'
+      # Запускаем тесты в headless-режиме
       - name: Build with Gradle
-        # Запускаем автотесты
-        # Для проектов на базе Selenide необходимо добавить параметр для запуска браузера
-        # в headless режиме -Dselenide.headless=true, параметр --info должен остаться
-        run: ./gradlew test --info  -Dselenide.headless=true
+        run: ./gradlew test --info -Dselenide.headless=true
